@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Copiar Prompts - IA de Imagem</title>
+
+    <style>
+        /* --- RESET BÁSICO --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f5f7fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- MODO ESCURO --- */
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .container {
+            background-color: #1e293b;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        body.dark-mode .subtitulo {
+            color: #94a3b8;
+            background: #1e293b;
+            border-left-color: #3b82f6;
+        }
+
+        body.dark-mode .card {
+            background: #263349;
+            border-color: #334155;
+        }
+
+        body.dark-mode .card:hover {
+            border-color: #3b82f6;
+            background: #2a3a55;
+        }
+
+        body.dark-mode .card h2 {
+            color: #f1f5f9;
+        }
+
+        body.dark-mode .descricao {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .prompt-box {
+            background: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .footer-note {
+            color: #64748b;
+            border-top-color: #334155;
+        }
+
+        body.dark-mode h1 {
+            color: #f1f5f9;
+        }
+
+        .container {
+            max-width: 880px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 24px;
+            padding: 40px 35px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        /* --- BOTÃO DE TOGGLE (SOL / LUA) --- */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            background-color: #f1f5f9;
+        }
+
+        .theme-toggle:hover {
+            background-color: #e2e8f0;
+        }
+
+        body.dark-mode .theme-toggle {
+            background-color: #334155;
+        }
+
+        body.dark-mode .theme-toggle:hover {
+            background-color: #475569;
+        }
+
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.4s ease;
+        }
+
+        .theme-toggle:hover svg {
+            transform: rotate(20deg) scale(1.05);
+        }
+
+        /* Esconde um ícone dependendo do tema */
+        .icon-sol {
+            display: block;
+        }
+        .icon-lua {
+            display: none;
+        }
+
+        body.dark-mode .icon-sol {
+            display: none;
+        }
+        body.dark-mode .icon-lua {
+            display: block;
+        }
+
+        /* --- TÍTULO PRINCIPAL --- */
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+            transition: color 0.3s ease;
+        }
+
+        .subtitulo {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 32px;
+            border-left: 4px solid #2563eb;
+            padding-left: 14px;
+            background: #f8fafc;
+            border-radius: 0 8px 8px 0;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* --- CADA CARD DE PROMPT --- */
+        .card {
+            background: #f9fafc;
+            border-radius: 16px;
+            padding: 22px 26px;
+            margin-bottom: 22px;
+            border: 1px solid #e9edf2;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #bdd3ff;
+            background: #f8faff;
+        }
+
+        body.dark-mode .card:hover {
+            border-color: #3b82f6;
+            background: #2a3a55;
+        }
+
+        /* TÍTULO DO CARD (h2) */
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 4px;
+            transition: color 0.3s ease;
+        }
+
+        /* DESCRIÇÃO (pra que serve) */
+        .descricao {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 14px;
+            line-height: 1.5;
+            transition: color 0.3s ease;
+        }
+
+        /* BLOCO DO PROMPT (visual) */
+        .prompt-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            border: 1px solid #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #0b1b33;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            word-break: break-word;
+            white-space: pre-wrap;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* BOTÃO AZUL */
+        .btn-copiar {
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-copiar:hover {
+            background-color: #1d4ed8;
+            transform: scale(1.02);
+            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
+        }
+
+        .btn-copiar:active {
+            transform: scale(0.97);
+            background-color: #1e40af;
+        }
+
+        /* ÍCONE de check (feedback) */
+        .btn-copiar.copiado {
+            background-color: #16a34a;
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.30);
+        }
+
+        .btn-copiar.copiado::after {
+            content: " ✔";
+            font-weight: 700;
+        }
+
+        /* --- RODAPÉ --- */
+        .footer-note {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            border-top: 1px solid #ecf1f7;
+            padding-top: 20px;
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* --- RESPONSIVO --- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px 16px;
+            }
+            .card {
+                padding: 18px 16px;
+            }
+            .prompt-box {
+                font-size: 13px;
+                padding: 12px 14px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .theme-toggle {
+                top: 12px;
+                right: 14px;
+                width: 38px;
+                height: 38px;
+            }
+            .theme-toggle svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- BOTÃO DE TOGGLE (SOL / LUA) -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro">
+        <!-- ÍCONE DO SOL (tema claro) -->
+        <svg class="icon-sol" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+
+        <!-- ÍCONE DA LUA (tema escuro) -->
+        <svg class="icon-lua" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+    </button>
+
+    <h1>Copiar Prompts</h1>
+    <div class="subtitulo">
+        Clique no botão azul para copiar o prompt exato — funciona em qualquer gerador de imagem.
+    </div>
+
+    <!-- ======================== -->
+    <!-- CARD 1 – MUDAR COR DO CABELO -->
+    <!-- ======================== -->
+    <div class="card">
+        <h2>1. Mudar cor do cabelo</h2>
+        <p class="descricao">
+            Substitui APENAS a cor dos fios, mantendo textura, brilho e o resto da imagem intacto.
+        </p>
+
+        <div class="prompt-box" id="promptCabelo">
+            "Utilizando a máscara de seleção focada estritamente na região capilar, substitua a pigmentação original por um tom roxo ametista profundo (hex #9966CC) com altos reflexos prateados. Mantenha inalterados a textura do fio, o volume, o brilho especular da luz e o caimento natural sobre os ombros. Preserve integralmente a pele, as sobrancelhas e o fundo do retrato. Aplique a nova cor com densidade total (opacidade 100%) nas raízes e degradê suave nas pontas."
+        </div>
+
+        <button class="btn-copiar" data-target="promptCabelo">
+            Copiar prompt
+        </button>
+    </div>
+
+    <!-- ======================== -->
+    <!-- CARD 2 – MUDAR ESTILO VISUAL -->
+    <!-- ======================== -->
+    <div class="card">
+        <h2>2. Mudar o estilo visual</h2>
+        <p class="descricao">
+            Mantém a pose e a estrutura facial, mas transforma iluminação, cores e texturas para um novo estilo.
+        </p>
+
+        <div class="prompt-box" id="promptEstilo">
+            "Refine a imagem atual aplicando uma estética Cyberpunk Noir. Converta a iluminação para luzes de neon magenta e ciano com sombras profundas e azuis. Transforme a textura da pele e do vestuário para um acabamento retrô-futurista de vinil e metal escovado. Insira elementos de glitch digital nas bordas e um efeito de névoa volumétrica atmosférica. A composição, a pose e a estrutura facial devem permanecer 100% idênticas à imagem fonte, alterando apenas o tratamento de superfície, as cores e o fundo."
+        </div>
+
+        <button class="btn-copiar" data-target="promptEstilo">
+            Copiar prompt
+        </button>
+    </div>
+
+    <!-- ======================== -->
+    <!-- CARD 3 – FUNDO PRETO COM TEXTO (FORÇANDO ESCRITA) -->
+    <!-- ======================== -->
+    <div class="card">
+        <h2>3. Fundo preto com texto</h2>
+        <p class="descricao">
+            Gera um fundo preto com a palavra "TESTE" em branco. A IA pode errar a ortografia, mas esse prompt é otimizado pra tentar acertar.
+        </p>
+
+        <div class="prompt-box" id="promptFundoPreto">
+            "Crie uma imagem com fundo totalmente preto liso, sem textura, sem brilho e sem gradiente. No centro exato, escreva a palavra TESTE com letras maiúsculas, fonte sans-serif extra grossa no estilo Impact, cor branca pura. A palavra deve ser grande e ocupar a maior parte da tela. Não adicione sombras, contornos ou efeitos. Fundo preto absoluto e texto branco em negrito. Escreva exatamente: T-E-S-T-E com espaçamento entre as letras."
+        </div>
+
+        <button class="btn-copiar" data-target="promptFundoPreto">
+            Copiar prompt
+        </button>
+    </div>
+
+    <!-- ======================== -->
+    <!-- CARD 4 – FUNDO PRETO LISO (SEM TEXTO) -->
+    <!-- ======================== -->
+    <div class="card">
+        <h2>4. Fundo preto liso (sem texto)</h2>
+        <p class="descricao">
+            Gera apenas o fundo preto fosco. Depois você adiciona o texto em qualquer editor com a fonte perfeita.
+        </p>
+
+        <div class="prompt-box" id="promptSoFundo">
+            "Fundo preto fosco liso, textura de papel cartão premium, sem brilho, sem gradiente, sem nenhum texto ou elemento. Proporção 16:9. Alta resolução."
+        </div>
+
+        <button class="btn-copiar" data-target="promptSoFundo">
+            Copiar prompt
+        </button>
+    </div>
+
+    <!-- ======================== -->
+    <!-- CARD 5 – CORREÇÃO DE TEXTO -->
+    <!-- ======================== -->
+    <div class="card">
+        <h2>5. Corrigir texto na imagem</h2>
+        <p class="descricao">
+            Substitui uma palavra errada por outra, mantendo fonte, cor e posição.
+        </p>
+
+        <div class="prompt-box" id="promptCorrigirTexto">
+            "Selecione a área do texto errado e substitua apenas a palavra 'APRENDÍ' por 'APRENDER' na mesma fonte, tamanho, cor branca e posição central. Mantenha o fundo preto intacto."
+        </div>
+
+        <button class="btn-copiar" data-target="promptCorrigirTexto">
+            Copiar prompt
+        </button>
+    </div>
+
+    <div class="footer-note">
+        Dica: Se quiser mais precisão, adicione --iw 2 no final do prompt para manter a forma original.
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- SCRIPT PARA COPIAR + TOGGLE DARK MODE     -->
+<!-- ========================================== -->
+<script>
+    (function() {
+        // =============================================
+        // 1. FUNÇÃO PARA COPIAR PROMPTS
+        // =============================================
+        const botoes = document.querySelectorAll('.btn-copiar');
+
+        botoes.forEach(botao => {
+            botao.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('data-target');
+                const promptElement = document.getElementById(targetId);
+
+                if (!promptElement) {
+                    alert('Erro: prompt não encontrado.');
+                    return;
+                }
+
+                let textoParaCopiar = promptElement.innerText.trim();
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textoParaCopiar)
+                        .then(() => {
+                            const originalText = this.innerHTML;
+                            this.classList.add('copiado');
+                            this.innerHTML = 'Copiado!';
+
+                            setTimeout(() => {
+                                this.classList.remove('copiado');
+                                this.innerHTML = originalText;
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            alert('Não foi possível copiar. Tente manualmente selecionando o texto.');
+                            console.error('Erro ao copiar: ', err);
+                        });
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = textoParaCopiar;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        alert('Prompt copiado!');
+                    } catch (err) {
+                        alert('Erro ao copiar. Selecione o texto manualmente.');
+                    }
+                    document.body.removeChild(textarea);
+                }
+            });
+        });
+
+        // =============================================
+        // 2. FUNÇÃO PARA ALTERNAR TEMA (DARK / LIGHT)
+        // =============================================
+        const toggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Verifica se já tem preferência salva no localStorage
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+        }
+
+        toggleBtn.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+
+            // Salva a preferência no localStorage
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+    })();
+</script>
+
+</body>
+</html>
