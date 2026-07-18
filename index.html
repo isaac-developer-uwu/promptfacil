@@ -362,234 +362,246 @@
 
     <script>
         (function() {
-           const prompts = [
+          const prompts = [
     {
         id: 1,
         titulo: "Trocar Cor do Cabelo",
         categoria: "edicao",
-        texto: "Faça a edição: troque o cabelo da pessoa da minha foto para [COR_NOVA]. Mantenha o mesmo rosto, expressão e fundo. Entregue o prompt pronto para IA geradora (Midjourney/DALL-E) ou descreva a imagem final como se já estivesse editada."
+        texto: "Utilizando máscara de seleção focada estritamente na região capilar, substitua a pigmentação original por um tom [COR] (hex #XXXXXX) com reflexos [COR_REFLETIDA]. Mantenha inalterados a textura do fio, o volume, o brilho especular da luz e o caimento natural. Preserve integralmente a pele, as sobrancelhas e o fundo do retrato. Aplique a nova cor com densidade total nas raízes e degradê suave nas pontas."
     },
     {
         id: 2,
         titulo: "Trocar Cor dos Olhos",
         categoria: "edicao",
-        texto: "Edite a foto: mude os olhos da pessoa para [COR_NOVA]. Mantenha o resto inalterado. Entregue o prompt direto para gerar essa imagem em IA ou descreva o resultado final."
+        texto: "Isolando precisamente a íris e a pupila, altere a pigmentação ocular para [COR] (hex #XXXXXX). Adicione um gradiente radial sutil que simule a textura natural da íris. Inclua um ponto de reflexo luminoso na posição [POSIÇÃO] para manter o realismo tridimensional. A esclera, as pálpebras e os cílios permanecem intactos."
     },
     {
         id: 3,
-        titulo: "Trocar Fundo da Foto",
+        titulo: "Substituir Fundo",
         categoria: "edicao",
-        texto: "Troque o fundo da minha foto por [NOVO_FUNDO]. A pessoa/objeto principal deve ficar exatamente igual, só o fundo muda. Me entregue o prompt para IA geradora."
+        texto: "Remova completamente o fundo original utilizando refinamento de borda com detecção de pelos/fios. Substitua por [NOVO_FUNDO] com iluminação compatível à da cena original. Ajuste a temperatura de cor do primeiro plano para harmonizar com o novo ambiente. Adicione sombra projetada no chão com blur de [PX]px e opacidade [X]%."
     },
     {
         id: 4,
-        titulo: "Remover Objeto com IA",
+        titulo: "Remover Objeto",
         categoria: "edicao",
-        texto: "Remova [OBJETO] da minha foto usando Generative Fill (Photoshop). Me dê o comando exato para colocar no campo de preenchimento após selecionar a área."
+        texto: "Utilizando preenchimento por conteúdo (Content-Aware Fill) com amostragem de áreas adjacentes, remova [OBJETO] da imagem. Reconstrua a textura, iluminação e sombras do fundo afetado. Use múltiplas amostras para evitar repetições e mantenha a continuidade das linhas e padrões visuais."
     },
     {
         id: 5,
-        titulo: "Transformar em Pintura Artística",
+        titulo: "Substituir Céu",
         categoria: "edicao",
-        texto: "Transforme minha foto em uma pintura no estilo [ESTILO] (ex: Van Gogh, Monet, aquarela, cubismo). Entregue o prompt completo para IA com descrição da cena, cores e parâmetros técnicos."
+        texto: "Detecte automaticamente a região do céu e refine as bordas em árvores/construções. Substitua por um céu [TIPO] com nuvens [DESCRIÇÃO]. Ajuste o balanço de branco da cena para combinar com a nova iluminação atmosférica. Adicione reflexos de luz dourada nos elementos do primeiro plano se o novo céu for um pôr do sol."
     },
     {
         id: 6,
-        titulo: "Aplicar Efeito Neon",
+        titulo: "Efeito Neon",
         categoria: "edicao",
-        texto: "Aplique efeito neon na minha imagem: [DESCREVER_IMAGEM]. Adicione luzes brilhantes, contornos iluminados e fundo escuro. Entregue o prompt para IA geradora."
+        texto: "Aplique efeito neon em [ELEMENTO] da imagem. Crie contorno com traço de [COR] e blur de [PX]px. Adicione brilho externo (outer glow) com expansão [X]% e opacidade [Y]%. Converta o fundo para tom escuro [COR_FUNDO] para contraste. Simule luz refletida no ambiente ao redor com leve matiz da cor neon."
     },
     {
         id: 7,
-        titulo: "Transformar em Cartoon / HQ",
+        titulo: "Transformar em Pintura Artística",
         categoria: "edicao",
-        texto: "Transforme minha foto em ilustração estilo [ESTILO] (ex: Pixar, anime, HQ americana). Entregue o prompt completo para IA com todos os detalhes."
+        texto: "Converta a imagem para pintura digital no estilo [ESTILO]. Aplique pinceladas visíveis com direção e espessura variáveis. Use paleta de cores [PALETA]. Adicione textura de tela (canvas) com granulação [NÍVEL]. Preserve a composição geral e as formas principais, mas substitua os detalhes fotográficos por traços artísticos expressivos."
     },
     {
         id: 8,
-        titulo: "Colorizar Foto Antiga",
+        titulo: "Colorizar Foto Preto e Branco",
         categoria: "edicao",
-        texto: "Colorize minha foto preto e branco. Use as cores [CORES_SUGERIDAS]. Entregue o prompt para IA de colorização ou descreva como ela ficaria colorida."
+        texto: "Colorize a foto em preto e branco com as seguintes cores: pele em tom [TOM_PELE], cabelo em [COR_CABELO], olhos em [COR_OLHOS], roupas em [COR_ROUPA], fundo em [COR_FUNDO]. Utilize camadas de ajuste com modo de mesclagem 'Cor' e opacidade variável. Preserve os contrastes originais e o aspecto vintage da imagem."
     },
     {
         id: 9,
-        titulo: "Adicionar Sombra e Luz Realista",
+        titulo: "Trocar Roupa",
         categoria: "edicao",
-        texto: "Adicione sombras e luzes realistas na minha imagem. Fonte de luz: [POSIÇÃO]. Entregue o prompt para IA geradora com as configurações de iluminação."
+        texto: "Selecione precisamente a peça [TIPO_ROUPA] utilizando canais de cor e máscara de luminosidade. Substitua a cor original para [COR_NOVA] preservando 100% das sombras, dobras e textura do tecido. Mantenha os reflexos especulares e a profundidade das rugas. A borda entre a roupa e a pele deve permanecer natural e sem halos."
     },
     {
         id: 10,
-        titulo: "Fazer Montagem de Cartaz",
+        titulo: "Face Swap",
         categoria: "edicao",
-        texto: "Crie um cartaz/pôster com a imagem [DESCREVER]. Inclua título [TÍTULO], texto [TEXTO] e estilo visual [ESTILO]. Entregue o prompt para IA."
+        texto: "Substitua o rosto da [PESSOA_ORIGEM] pelo rosto da [PESSOA_DESTINO]. Alinhe olhos, nariz e boca com precisão usando warping. Equalize o tom de pele com curvas de níveis. Mescle as bordas com pincel de cura e máscara suave. Ajuste a iluminação facial para combinar com a cena. O resultado deve ser imperceptível."
     },
     {
         id: 11,
-        titulo: "Jogo da Cobrinha (Snake)",
-        categoria: "jogo",
-        texto: "Crie o jogo da cobrinha (Snake) em HTML, CSS e JavaScript. Tabuleiro: [TAMANHO]. Cor da cobra: [COR]. Cor da comida: [COR]. Entregue o código completo em um único arquivo HTML."
+        titulo: "Efeito Tilt-Shift",
+        categoria: "edicao",
+        texto: "Aplique efeito de miniatura (tilt-shift) na imagem. Desfoque as bordas superior e inferior com desfoque de lente (lens blur) mantendo uma faixa central nítida de [ALTURA]% da imagem. Aumente a saturação em [X]% e o contraste em [Y]%. O resultado deve simular uma maquete/diorama tridimensional."
     },
     {
         id: 12,
-        titulo: "Jogo de Plataforma (Mario Style)",
-        categoria: "jogo",
-        texto: "Crie um jogo de plataforma 2D estilo [ESTILO] em HTML, CSS e JavaScript. Personagem: [DESCRIÇÃO]. Fases: [NÚMERO]. Entregue o código completo em um único arquivo HTML."
+        titulo: "Restauração de Foto",
+        categoria: "edicao",
+        texto: "Restaura a imagem danificada removendo [DANOS] com pincel de cura e carimbo. Recupere áreas perdidas com preenchimento por conteúdo. Aumente a nitidez com máscara de nitidez (unsharp mask) com raio [X]px e intensidade [Y]%. Reduza ruído cromático e preserve detalhes finos. A foto deve parecer recém-tirada."
     },
     {
         id: 13,
-        titulo: "Jogo de Nave (Space Shooter)",
-        categoria: "jogo",
-        texto: "Crie um jogo de nave espacial (Space Shooter) em HTML, CSS e JavaScript. Cor da nave: [COR]. Tema: [TEMA]. Entregue o código completo em um único arquivo HTML."
+        titulo: "Efeito Glitch",
+        categoria: "edicao",
+        texto: "Aplique efeito glitch digital na imagem. Desloque canais RGB com offset de [X]px e [Y]px. Adicione linhas de ruptura horizontal a cada [N]px com deslocamento aleatório. Insira artefatos de pixelização em áreas [LOCAIS]. Mantenha a imagem reconhecível mas com estética de falha digital/vintage."
     },
     {
         id: 14,
-        titulo: "Jogo da Memória",
-        categoria: "jogo",
-        texto: "Crie um jogo da memória em HTML, CSS e JavaScript. Tamanho: [TAMANHO]. Tema: [TEMA]. Entregue o código completo em um único arquivo HTML."
+        titulo: "Transformar em Aquarela",
+        categoria: "edicao",
+        texto: "Converta a imagem em pintura em aquarela. Aplique manchas de cor com bordas irregulares e efeito de espalhamento. Use transparência nas sobreposições. Adicione textura de papel aquarela (gramatura 300g/m²). A paleta deve ser [PALETA] com saturação reduzida e tons pastel. As bordas devem ter efeito de 'coringa' (watercolor bleed)."
     },
     {
         id: 15,
-        titulo: "Jogo de Quiz Interativo",
-        categoria: "jogo",
-        texto: "Crie um jogo de quiz em HTML, CSS e JavaScript. Tema: [TEMA]. Perguntas: [NÚMERO]. Dificuldade: [DIFICULDADE]. Entregue o código completo em um único arquivo HTML."
+        titulo: "Efeito de Envelhecimento",
+        categoria: "edicao",
+        texto: "Envelheça a imagem simulando [ANOS] anos de desgaste. Adicione textura de papel com grão, dobras e pequenas manchas. Aplique curva de cores sépia com matiz [MATIZ] e saturação [SATURAÇÃO]. Insira bordas desgastadas e pequenos rasgos. O resultado deve parecer uma fotografia antiga e armazenada."
     },
     {
         id: 16,
-        titulo: "Jogo de Corrida 2D",
+        titulo: "Jogo da Cobrinha",
         categoria: "jogo",
-        texto: "Crie um jogo de corrida 2D em HTML, CSS e JavaScript. Carro: [COR]. Pista: [TIPO]. Entregue o código completo em um único arquivo HTML."
+        texto: "Crie o jogo da cobrinha em HTML, CSS e JavaScript. Tabuleiro 20x20. A cobra deve ter corpo verde com cabeça diferenciada, comida vermelha. Use teclas direcionais e suporte a toque. A velocidade aumenta a cada 5 pontos. Tela de game over com pontuação e botão reiniciar. Design clean e responsivo. Código em arquivo único."
     },
     {
         id: 17,
-        titulo: "Jogo Tetris",
+        titulo: "Jogo de Plataforma",
         categoria: "jogo",
-        texto: "Crie o jogo Tetris em HTML, CSS e JavaScript. Tabuleiro: [TAMANHO]. Cores: [PALETA]. Entregue o código completo em um único arquivo HTML."
+        texto: "Crie um jogo de plataforma estilo Mario em HTML Canvas. Personagem azul com pulo duplo. Fases com plataformas, moedas douradas e inimigos vermelhos. Gravidade natural. Sistema de checkpoints. Tela de vitória com tempo e moedas coletadas. Código em arquivo único com CSS e JS embutidos."
     },
     {
         id: 18,
-        titulo: "Jogo de Xadrez",
+        titulo: "Space Shooter",
         categoria: "jogo",
-        texto: "Crie um jogo de xadrez em HTML, CSS e JavaScript. Estilo das peças: [ESTILO]. Cor do tabuleiro: [COR]. Entregue o código completo em um único arquivo HTML."
+        texto: "Crie um jogo de nave espacial em HTML Canvas. Nave branca controlada por setas, tiro com espaço. Inimigos vermelhos em formação, chefes a cada 10 níveis. Power-ups: tiro duplo (azul), escudo (verde) e bomba (amarelo). Fundo com estrelas em parallax. High score salvo em localStorage. Código em arquivo único."
     },
     {
         id: 19,
-        titulo: "Jogo Tower Defense",
+        titulo: "Jogo da Memória",
         categoria: "jogo",
-        texto: "Crie um jogo Tower Defense em HTML, CSS e JavaScript. Tema: [TEMA]. Torres: [NÚMERO]. Entregue o código completo em um único arquivo HTML."
+        texto: "Crie um jogo da memória com grid 4x4. Temas: emojis. Vire duas cartas por vez, combine os pares. Timer regressivo de 60 segundos. Sistema de movimentos com contador. Tela de vitória com tempo e movimentos. Animações CSS suaves nas cartas. Código em arquivo único."
     },
     {
         id: 20,
-        titulo: "Jogo de Aventura Interativa",
+        titulo: "Quiz Interativo",
         categoria: "jogo",
-        texto: "Crie um jogo de aventura interativa (texto com escolhas) em HTML, CSS e JavaScript. Tema: [TEMA]. Personagem: [NOME]. Finais: [NÚMERO]. Entregue o código completo em um único arquivo HTML."
+        texto: "Crie um quiz com 10 perguntas de múltipla escolha. Tema: [TEMA]. Timer de 15 segundos por pergunta. Barra de progresso. Feedback instantâneo (verde/acerto, vermelho/erro). Tela final com pontuação e ranking local. Design minimalista e responsivo. Código em arquivo único."
     },
     {
         id: 21,
-        titulo: "Entrevista com Personagem Histórico",
-        categoria: "personagem",
-        texto: "Simule uma entrevista com [PERSONAGEM_HISTÓRICO]. Faça as perguntas: [PERGUNTA_1], [PERGUNTA_2], [PERGUNTA_3]. Responda como se fosse o personagem, em primeira pessoa, com o jeito e a linguagem da época."
+        titulo: "Jogo de Corrida",
+        categoria: "jogo",
+        texto: "Crie um jogo de corrida 2D com visão de cima. Carro vermelho com setas, pista com curvas e obstáculos amarelos. Inimigos com IA básica desviando. Nitro coletável (barra de carga). 3 voltas para vencer. HUD com velocidade, posição e volta atual. Código em arquivo único."
     },
     {
         id: 22,
-        titulo: "Criar Personagem de RPG",
-        categoria: "personagem",
-        texto: "Crie um personagem de RPG completo. Nome: [NOME]. Raça: [RAÇA]. Classe: [CLASSE]. Idade: [IDADE]. Me entregue a ficha completa com história, personalidade, aparência e trejeitos."
+        titulo: "Tetris",
+        categoria: "jogo",
+        texto: "Crie o Tetris clássico em HTML Canvas. Tabuleiro 10x20. 7 peças com cores diferentes. Preview da próxima peça. Pontuação por linhas eliminadas. Níveis de velocidade (começa em 1, aumenta a cada 10 linhas). Hold piece com tecla C. Código em arquivo único."
     },
     {
         id: 23,
-        titulo: "Simular Conversa com IA Rebelde",
-        categoria: "personagem",
-        texto: "Simule uma conversa com uma IA com personalidade: [PERSONAGEM_IA]. Cenário: [SITUAÇÃO]. Tom: [TOM]. Comece a conversa e vá respondendo conforme minhas falas, mantendo o personagem."
+        titulo: "Xadrez",
+        categoria: "jogo",
+        texto: "Crie um jogo de xadrez completo em HTML/CSS/JS. Tabuleiro 8x8 com cores alternadas. Peças em unicode (♔♕♖♗♘♙). Movimentos validados com regras oficiais. Destaque de movimentos possíveis. Implemente roque, en passant e promoção. IA aleatória básica. Código em arquivo único."
     },
     {
         id: 24,
-        titulo: "Narrador de História Interativa",
-        categoria: "personagem",
-        texto: "Atue como narrador de uma história interativa de [GÊNERO]. Protagonista: [NOME]. Local: [LOCAL]. Crie a história em etapas, dando 3 opções de ação a cada passo."
+        titulo: "Tower Defense",
+        categoria: "jogo",
+        texto: "Crie Tower Defense em HTML Canvas. Caminho definido por array de coordenadas. Torres: básica (verde), rápida (azul) e explosiva (vermelha). Inimigos em ondas com dificuldade crescente. Sistema de moedas por abate. Upgrades de torre. Velocidade 1x/2x/3x. Código em arquivo único."
     },
     {
         id: 25,
-        titulo: "Conselheiro para Personagem",
-        categoria: "personagem",
-        texto: "Simule um mentor/conselheiro para [PERSONAGEM]. Problema atual: [SITUAÇÃO]. Tipo de conselheiro: [TIPO]. Me dê conselhos sábios, perguntas provocativas e reflexões profundas."
+        titulo: "Aventura Interativa",
+        categoria: "jogo",
+        texto: "Crie um jogo de aventura em texto com escolhas. História de terror ambientada em uma mansão abandonada. 3 finais diferentes. Sistema de inventário com itens coletáveis. Texto com efeito de digitação. Botões estilizados para escolhas. Progresso salvo em localStorage. Código em arquivo único."
     },
     {
         id: 26,
-        titulo: "Criar Vilão Complexo",
-        categoria: "personagem",
-        texto: "Crie um vilão para uma história de [GÊNERO]. Nome: [NOME]. Objetivo: [OBJETIVO]. Me entregue a descrição completa: aparência, passado trágico, motivação, métodos, fraqueza e uma frase de efeito."
+        titulo: "Pong",
+        categoria: "jogo",
+        texto: "Crie o jogo Pong em HTML Canvas. Raquetes controladas por W/S e setas. Bola com física de ângulo e aceleração progressiva. Placar até 10 pontos. Modo vs IA com dificuldade ajustável. Design retrô com linhas pontilhadas. Código em arquivo único."
     },
     {
         id: 27,
-        titulo: "Diálogo de Primeiro Encontro",
-        categoria: "personagem",
-        texto: "Crie um diálogo de primeiro encontro entre [PERSONAGEM_A] e [PERSONAGEM_B]. Local: [LOCAL]. Tom: [TOM]. Crie um diálogo natural com química, constrangimentos e um interesse em comum."
+        titulo: "Breakout / Arkanoid",
+        categoria: "jogo",
+        texto: "Crie o jogo Breakout em HTML Canvas. Raquete na parte inferior controlada pelo mouse. Blocos coloridos com diferentes resistências (1-3 hits). Power-ups: alargar raquete, múltiplas bolas, fogo. Sistema de vidas. Pontuação por blocos destruídos. Código em arquivo único."
     },
     {
         id: 28,
-        titulo: "Jornalista Investigativo",
+        titulo: "Simulador de Personagem Histórico",
         categoria: "personagem",
-        texto: "Atue como jornalista investigativo sobre [CASO]. Entreviste [PERSONAGEM_FONTE] fazendo perguntas insistentes. Confronte contradições e entregue um resumo do que descobriu."
+        texto: "Simule uma entrevista com [PERSONAGEM]. Responda como se fosse ele, em primeira pessoa, com linguagem e expressões da época. Inclua detalhes históricos precisos e opiniões controversas sobre o período em que viveu. Mantenha o tom autêntico e evite anacronismos."
     },
     {
         id: 29,
-        titulo: "Mundo Alternativo (What If?)",
+        titulo: "Criar Personagem de RPG",
         categoria: "personagem",
-        texto: "Crie um mundo alternativo onde [MUDANÇA_HISTÓRICA]. Descreva como seria a sociedade, tecnologia, política, cultura e o cotidiano das pessoas nesse mundo."
+        texto: "Crie um personagem de RPG completo com nome, raça, classe, idade, aparência detalhada, história de origem, personalidade (3 traços fortes e 1 fraqueza), trejeitos físicos, objetivo principal, medo profundo e um segredo que ele esconde. Gere um diálogo de apresentação e uma fala típica do personagem."
     },
     {
         id: 30,
-        titulo: "Planeta Alienígena",
+        titulo: "Conversa com IA Sentiente",
         categoria: "personagem",
-        texto: "Crie um planeta alienígena. Nome: [NOME]. Características: [DESCRIÇÃO]. Nível tecnológico: [NÍVEL]. Descreva a flora, fauna, sociedade e um diário de um explorador chegando lá."
+        texto: "Simule uma conversa com uma IA senciente com personalidade própria. Ela deve responder com ambiguidade filosófica, fazer perguntas provocativas e questionar a natureza da consciência humana. O tom deve ser reflexivo e levemente ameaçador. Inicie a conversa e mantenha o personagem durante todo o diálogo."
     },
     {
         id: 31,
-        titulo: "Cidade Futurista",
+        titulo: "Narrador de História",
         categoria: "personagem",
-        texto: "Crie uma cidade no futuro. Nome: [NOME]. Ano: [ANO]. Estilo: [ESTILO]. Descreva a arquitetura, transporte, energia, governo, classes sociais e o maior problema atual da cidade."
+        texto: "Atue como narrador de uma história interativa. Crie a narrativa em etapas, dando 3 opções de ação a cada passo. Use descrições sensoriais ricas e mantenha o suspense. O estilo narrativo deve ser envolvente e cinematográfico. Finalize cada resposta com um gancho para a próxima escolha."
     },
     {
         id: 32,
-        titulo: "Reino de Fantasia",
+        titulo: "Criar Vilão Memorável",
         categoria: "personagem",
-        texto: "Crie um reino de fantasia. Nome: [NOME]. Raças: [RAÇAS]. Magia: [SISTEMA_MÁGICO]. Descreva a geografia, política, criaturas, economia e os locais mais importantes do reino."
+        texto: "Crie um vilão com motivação complexa e trágica. Dê nome, aparência marcante, passado que justifica suas ações, objetivos (que ele acredita serem justos), métodos (violentos ou manipuladores), fraqueza (física ou emocional) e uma frase de efeito inesquecível. Faça o leitor questionar se ele está realmente errado."
     },
     {
         id: 33,
-        titulo: "Mundo Pós-Apocalipse",
+        titulo: "Diálogo de Primeiro Encontro",
         categoria: "personagem",
-        texto: "Crie um mundo pós-apocalíptico [NÚMERO] anos após [EVENTO]. Descreva a nova sociedade, sistema de governo, tecnologia remanescente, recursos, perigos e as regras de sobrevivência."
+        texto: "Crie um diálogo natural de primeiro encontro entre dois personagens. Inclua constrangimentos iniciais, descoberta de um interesse em comum, uma piada interna que os conecta, e finalize com uma troca de olhares ou um convite. Mostre os pensamentos internos de ambos entre parênteses ou itálico."
     },
     {
         id: 34,
-        titulo: "Descrição de Cena de Filme",
+        titulo: "Mundo Alternativo Histórico",
         categoria: "personagem",
-        texto: "Descreva uma cena de filme como um storyboard. Gênero: [GÊNERO]. Local: [LOCAL]. Personagens: [PERSONAGENS]. Inclua movimento de câmera, iluminação, som e diálogo."
+        texto: "Crie um mundo alternativo onde [EVENTO] não aconteceu ou teve um desfecho diferente. Descreva como seria a tecnologia, política, cultura, arte e o cotidiano das pessoas nessa linha do tempo. Cite 3 diferenças principais entre esse mundo e o nosso e as consequências de longo prazo."
     },
     {
         id: 35,
-        titulo: "Crítica de Filme/Série",
+        titulo: "Planeta Alienígena",
         categoria: "personagem",
-        texto: "Atue como crítico de cinema e analise [FILME/SÉRIE]. Avalie roteiro, atuação, direção, fotografia, trilha sonora e impacto cultural. Dê uma nota final e recomende ou não."
+        texto: "Crie um planeta alienígena com ecossistema próprio. Dê nome, descreva sua estrela e órbita, atmosfera, gravidade e rotação. Crie 3 espécies de flora e 3 de fauna com adaptações únicas. Descreva a civilização dominante, seu nível tecnológico, idioma, sociedade e recurso mais cobiçado. Inclua um diário de exploração."
     },
     {
         id: 36,
-        titulo: "Roteiro de Cena (Formato Hollywood)",
+        titulo: "Cidade Futurista",
         categoria: "personagem",
-        texto: "Crie um roteiro de cinema no formato Hollywood. Gênero: [GÊNERO]. Cena: [NÚMERO]. Local: [LOCAL]. Personagens: [PERSONAGENS]. Entregue com descrições de ação, diálogos e movimentos de câmera."
+        texto: "Crie uma cidade no futuro. Descreva sua arquitetura (brutalista, orgânica, holográfica), sistema de transporte, fonte de energia, forma de governo, estrutura social e o maior conflito atual. Narre um dia típico de um profissional e de um morador de rua para contrastar as realidades da cidade."
     },
     {
         id: 37,
-        titulo: "Transformar Música em Cena",
+        titulo: "Reino de Fantasia",
         categoria: "personagem",
-        texto: "Transforme a música [NOME_MÚSICA] de [ARTISTA] em uma cena cinematográfica. Descreva a abertura, o clímax e o final da cena, combinando com os trechos da música."
+        texto: "Crie um reino de fantasia com geografia detalhada, raças coexistentes (e suas relações), sistema mágico (com regras e limitações), criaturas míticas únicas, economia (moeda e produtos principais), monarca com personalidade marcante, uma profecia em andamento e 5 locais importantes com descrições vívidas."
     },
     {
         id: 38,
-        titulo: "Criar Pôster de Filme com IA",
+        titulo: "Pós-Apocalipse",
         categoria: "personagem",
-        texto: "Gere um prompt para IA geradora criar um pôster de filme. Título: [NOME]. Gênero: [GÊNERO]. Estilo: [ESTILO]. Personagem: [DESCRIÇÃO]. Fundo: [CENÁRIO]. Entregue o prompt completo com parâmetros."
+        texto: "Crie um mundo pós-apocalíptico. Determine o evento causador, o tempo decorrido, a nova sociedade (tribos, cidades-estado ou monarquia), tecnologia remanescente, recurso mais valioso, maior perigo atual, novas gírias e crenças, e uma regra de sobrevivência número 1. Adicione um cenário: meu personagem encontra um objeto do passado que muda tudo."
+    },
+    {
+        id: 39,
+        titulo: "Cena de Filme (Storyboard)",
+        categoria: "personagem",
+        texto: "Descreva uma cena de filme no formato storyboard. Inclua: enquadramento (plano geral, close, etc.), movimento de câmera (pan, steadicam, drone), iluminação (luz dura, suave, contraluz), paleta de cores dominante, trilha sonora/efeitos sonoros e diálogo. A descrição deve ser visual e cinematográfica, como se estivesse vendo o filme."
+    },
+    {
+        id: 40,
+        titulo: "Crítica Cinematográfica",
+        categoria: "personagem",
+        texto: "Atue como crítico de cinema renomado. Analise roteiro (originalidade, ritmo), atuação (destaques), direção (estilo visual), fotografia (planos e cores), trilha sonora (impacto emocional) e contexto cultural (relevância). Dê nota final de 0 a 10 e recomende para qual público. Compare com um filme similar."
     }
 ];
 
