@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Copiar Prompts - IA de Imagem</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Prompts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET BÁSICO --- */
         * {
             margin: 0;
             padding: 0;
@@ -14,493 +13,534 @@
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-            background-color: #f5f7fb;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: #f4f6fa;
+            color: #1e1e2a;
+            transition: background 0.3s ease, color 0.3s ease;
             padding: 20px;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
         }
 
-        /* --- MODO ESCURO --- */
-        body.dark-mode {
-            background-color: #0f172a;
-            color: #e2e8f0;
-        }
-
-        body.dark-mode .container {
-            background-color: #1e293b;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        body.dark-mode .subtitulo {
-            color: #94a3b8;
-            background: #1e293b;
-            border-left-color: #3b82f6;
-        }
-
-        body.dark-mode .card {
-            background: #263349;
-            border-color: #334155;
-        }
-
-        body.dark-mode .card:hover {
-            border-color: #3b82f6;
-            background: #2a3a55;
-        }
-
-        body.dark-mode .card h2 {
-            color: #f1f5f9;
-        }
-
-        body.dark-mode .descricao {
-            color: #cbd5e1;
-        }
-
-        body.dark-mode .prompt-box {
-            background: #0f172a;
-            border-color: #334155;
-            color: #e2e8f0;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
-        }
-
-        body.dark-mode .footer-note {
-            color: #64748b;
-            border-top-color: #334155;
-        }
-
-        body.dark-mode h1 {
-            color: #f1f5f9;
+        body.dark {
+            background: #12121c;
+            color: #eaeef2;
         }
 
         .container {
-            max-width: 880px;
-            width: 100%;
-            background-color: #ffffff;
-            border-radius: 24px;
-            padding: 40px 35px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
         }
 
-        /* --- BOTÃO DE TOGGLE (SOL / LUA) --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: -0.3px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
         .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 25px;
             background: none;
             border: none;
             cursor: pointer;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s;
-            background-color: #f1f5f9;
+            background: rgba(0, 0, 0, 0.06);
+            transition: background 0.2s;
+            color: #1e1e2a;
+        }
+
+        body.dark .theme-toggle {
+            background: rgba(255, 255, 255, 0.08);
+            color: #eaeef2;
         }
 
         .theme-toggle:hover {
-            background-color: #e2e8f0;
+            background: rgba(0, 0, 0, 0.12);
         }
 
-        body.dark-mode .theme-toggle {
-            background-color: #334155;
-        }
-
-        body.dark-mode .theme-toggle:hover {
-            background-color: #475569;
+        body.dark .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .theme-toggle svg {
-            width: 24px;
-            height: 24px;
-            transition: transform 0.4s ease;
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .theme-toggle:hover svg {
-            transform: rotate(20deg) scale(1.05);
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
         }
 
-        /* Esconde um ícone dependendo do tema */
-        .icon-sol {
-            display: block;
-        }
-        .icon-lua {
-            display: none;
-        }
-
-        body.dark-mode .icon-sol {
-            display: none;
-        }
-        body.dark-mode .icon-lua {
-            display: block;
-        }
-
-        /* --- TÍTULO PRINCIPAL --- */
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 6px;
-            letter-spacing: -0.3px;
-            transition: color 0.3s ease;
-        }
-
-        .subtitulo {
-            font-size: 16px;
-            color: #64748b;
-            margin-bottom: 32px;
-            border-left: 4px solid #2563eb;
-            padding-left: 14px;
-            background: #f8fafc;
-            border-radius: 0 8px 8px 0;
-            line-height: 1.5;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-
-        /* --- CADA CARD DE PROMPT --- */
-        .card {
-            background: #f9fafc;
-            border-radius: 16px;
-            padding: 22px 26px;
-            margin-bottom: 22px;
-            border: 1px solid #e9edf2;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: #bdd3ff;
-            background: #f8faff;
-        }
-
-        body.dark-mode .card:hover {
-            border-color: #3b82f6;
-            background: #2a3a55;
-        }
-
-        /* TÍTULO DO CARD (h2) */
-        .card h2 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 4px;
-            transition: color 0.3s ease;
-        }
-
-        /* DESCRIÇÃO (pra que serve) */
-        .descricao {
+        .filter-btn {
+            padding: 8px 18px;
+            border-radius: 30px;
+            border: 1.5px solid #d0d5de;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
             font-size: 14px;
-            color: #475569;
-            margin-bottom: 14px;
-            line-height: 1.5;
-            transition: color 0.3s ease;
-        }
-
-        /* BLOCO DO PROMPT (visual) */
-        .prompt-box {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 16px 20px;
-            border: 1px solid #e2e8f0;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #0b1b33;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            word-break: break-word;
-            white-space: pre-wrap;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* BOTÃO AZUL */
-        .btn-copiar {
-            background-color: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 40px;
-            padding: 10px 28px;
-            font-size: 15px;
-            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+            transition: all 0.2s;
+            color: #1e1e2a;
         }
 
-        .btn-copiar:hover {
-            background-color: #1d4ed8;
-            transform: scale(1.02);
-            box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
+        body.dark .filter-btn {
+            border-color: #3a3a4c;
+            color: #eaeef2;
         }
 
-        .btn-copiar:active {
-            transform: scale(0.97);
-            background-color: #1e40af;
+        .filter-btn.active {
+            background: #1e1e2a;
+            color: #f4f6fa;
+            border-color: #1e1e2a;
         }
 
-        /* ÍCONE de check (feedback) */
-        .btn-copiar.copiado {
-            background-color: #16a34a;
-            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.30);
+        body.dark .filter-btn.active {
+            background: #eaeef2;
+            color: #12121c;
+            border-color: #eaeef2;
         }
 
-        .btn-copiar.copiado::after {
-            content: " ✔";
-            font-weight: 700;
+        .filter-btn:hover:not(.active) {
+            background: rgba(0, 0, 0, 0.05);
         }
 
-        /* --- RODAPÉ --- */
-        .footer-note {
-            margin-top: 20px;
-            text-align: center;
+        body.dark .filter-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .prompt-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px 24px 24px 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s, box-shadow 0.3s;
+            border: 1px solid #eef0f4;
+        }
+
+        body.dark .prompt-card {
+            background: #1c1c2e;
+            border-color: #2c2c42;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .prompt-card .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #eef0f4;
+            color: #4a4a5a;
+            margin-bottom: 10px;
+        }
+
+        body.dark .prompt-card .badge {
+            background: #2c2c42;
+            color: #b0b8c8;
+        }
+
+        .prompt-card .badge.edicao {
+            background: #e3edfb;
+            color: #1a5ba8;
+        }
+
+        body.dark .prompt-card .badge.edicao {
+            background: #1a2a4a;
+            color: #7ab0f0;
+        }
+
+        .prompt-card .badge.jogo {
+            background: #e6f5e6;
+            color: #1f7a3a;
+        }
+
+        body.dark .prompt-card .badge.jogo {
+            background: #1a3a2a;
+            color: #6ac08a;
+        }
+
+        .prompt-card .badge.personagem {
+            background: #f5e6f5;
+            color: #8a3a7a;
+        }
+
+        body.dark .prompt-card .badge.personagem {
+            background: #3a1a3a;
+            color: #d08ac0;
+        }
+
+        .prompt-card .badge.mundo {
+            background: #f0ece4;
+            color: #7a6a4a;
+        }
+
+        body.dark .prompt-card .badge.mundo {
+            background: #2a261a;
+            color: #c8b88a;
+        }
+
+        .prompt-card .badge.cena {
+            background: #fce8e8;
+            color: #a84a4a;
+        }
+
+        body.dark .prompt-card .badge.cena {
+            background: #3a1a1a;
+            color: #e88a8a;
+        }
+
+        .prompt-card h3 {
+            font-weight: 600;
+            font-size: 17px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .prompt-card .prompt-text {
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #2c2c3a;
+            margin: 10px 0 16px 0;
+            padding: 12px 16px;
+            background: #f8f9fc;
+            border-radius: 10px;
+            border-left: 3px solid #d0d5de;
+            font-family: 'Inter', monospace;
             font-size: 13px;
-            color: #94a3b8;
-            border-top: 1px solid #ecf1f7;
-            padding-top: 20px;
-            transition: color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* --- RESPONSIVO --- */
-        @media (max-width: 600px) {
-            .container {
-                padding: 24px 16px;
+        body.dark .prompt-card .prompt-text {
+            background: #14141e;
+            color: #d8dce6;
+            border-left-color: #3a3a52;
+        }
+
+        .prompt-card .copy-btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
+            background: #1e1e2a;
+            color: #f4f6fa;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        body.dark .prompt-card .copy-btn {
+            background: #eaeef2;
+            color: #12121c;
+        }
+
+        .prompt-card .copy-btn:hover {
+            background: #3a3a4e;
+        }
+
+        body.dark .prompt-card .copy-btn:hover {
+            background: #ffffff;
+        }
+
+        .prompt-card .copy-btn:active {
+            transform: scale(0.96);
+        }
+
+        .prompt-card .copy-btn.copied {
+            background: #1f8a4a;
+            color: #fff;
+        }
+
+        body.dark .prompt-card .copy-btn.copied {
+            background: #2aae5a;
+            color: #12121c;
+        }
+
+        @media (min-width: 768px) {
+            .prompts-grid {
+                grid-template-columns: 1fr 1fr;
             }
-            .card {
-                padding: 18px 16px;
+        }
+
+        @media (min-width: 1024px) {
+            .prompts-grid {
+                grid-template-columns: 1fr 1fr 1fr;
             }
-            .prompt-box {
-                font-size: 13px;
-                padding: 12px 14px;
-            }
-            h1 {
-                font-size: 22px;
-            }
-            .theme-toggle {
-                top: 12px;
-                right: 14px;
-                width: 38px;
-                height: 38px;
-            }
-            .theme-toggle svg {
-                width: 20px;
-                height: 20px;
-            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1e1e2a;
+            color: #f4f6fa;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark .toast {
+            background: #eaeef2;
+            color: #12121c;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
     </style>
 </head>
-
 <body>
-
-<div class="container">
-
-    <!-- BOTÃO DE TOGGLE (SOL / LUA) -->
-    <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro">
-        <!-- ÍCONE DO SOL (tema claro) -->
-        <svg class="icon-sol" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5" />
-            <line x1="12" y1="1" x2="12" y2="3" />
-            <line x1="12" y1="21" x2="12" y2="23" />
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-            <line x1="1" y1="12" x2="3" y2="12" />
-            <line x1="21" y1="12" x2="23" y2="12" />
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-        </svg>
-
-        <!-- ÍCONE DA LUA (tema escuro) -->
-        <svg class="icon-lua" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-    </button>
-
-    <h1>Copiar Prompts</h1>
-    <div class="subtitulo">
-        Clique no botão azul para copiar o prompt exato — funciona em qualquer gerador de imagem.
-    </div>
-
-    <!-- ======================== -->
-    <!-- CARD 1 – MUDAR COR DO CABELO -->
-    <!-- ======================== -->
-    <div class="card">
-        <h2>1. Mudar cor do cabelo</h2>
-        <p class="descricao">
-            Substitui APENAS a cor dos fios, mantendo textura, brilho e o resto da imagem intacto.
-        </p>
-
-        <div class="prompt-box" id="promptCabelo">
-            "Utilizando a máscara de seleção focada estritamente na região capilar, substitua a pigmentação original por um tom roxo ametista profundo (hex #9966CC) com altos reflexos prateados. Mantenha inalterados a textura do fio, o volume, o brilho especular da luz e o caimento natural sobre os ombros. Preserve integralmente a pele, as sobrancelhas e o fundo do retrato. Aplique a nova cor com densidade total (opacidade 100%) nas raízes e degradê suave nas pontas."
+    <div class="container">
+        <div class="header">
+            <h1>Central de Prompts</h1>
+            <div class="header-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 3a6 6 0 0 0 9 9 6 6 0 1 1-9-9Z" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
-        <button class="btn-copiar" data-target="promptCabelo">
-            Copiar prompt
-        </button>
-    </div>
-
-    <!-- ======================== -->
-    <!-- CARD 2 – MUDAR ESTILO VISUAL -->
-    <!-- ======================== -->
-    <div class="card">
-        <h2>2. Mudar o estilo visual</h2>
-        <p class="descricao">
-            Mantém a pose e a estrutura facial, mas transforma iluminação, cores e texturas para um novo estilo.
-        </p>
-
-        <div class="prompt-box" id="promptEstilo">
-            "Refine a imagem atual aplicando uma estética Cyberpunk Noir. Converta a iluminação para luzes de neon magenta e ciano com sombras profundas e azuis. Transforme a textura da pele e do vestuário para um acabamento retrô-futurista de vinil e metal escovado. Insira elementos de glitch digital nas bordas e um efeito de névoa volumétrica atmosférica. A composição, a pose e a estrutura facial devem permanecer 100% idênticas à imagem fonte, alterando apenas o tratamento de superfície, as cores e o fundo."
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-filter="todos">Todos</button>
+            <button class="filter-btn" data-filter="edicao">Edição</button>
+            <button class="filter-btn" data-filter="jogo">Jogos</button>
+            <button class="filter-btn" data-filter="personagem">Personagens</button>
+            <button class="filter-btn" data-filter="mundo">Mundos</button>
+            <button class="filter-btn" data-filter="cena">Cenas</button>
         </div>
 
-        <button class="btn-copiar" data-target="promptEstilo">
-            Copiar prompt
-        </button>
+        <div class="prompts-grid" id="promptsGrid"></div>
     </div>
 
-    <!-- ======================== -->
-    <!-- CARD 3 – FUNDO PRETO COM TEXTO (FORÇANDO ESCRITA) -->
-    <!-- ======================== -->
-    <div class="card">
-        <h2>3. Fundo preto com texto</h2>
-        <p class="descricao">
-            Gera um fundo preto com a palavra "TESTE" em branco. A IA pode errar a ortografia, mas esse prompt é otimizado pra tentar acertar.
-        </p>
+    <div class="toast" id="toast">Copiado!</div>
 
-        <div class="prompt-box" id="promptFundoPreto">
-            "Crie uma imagem com fundo totalmente preto liso, sem textura, sem brilho e sem gradiente. No centro exato, escreva a palavra TESTE com letras maiúsculas, fonte sans-serif extra grossa no estilo Impact, cor branca pura. A palavra deve ser grande e ocupar a maior parte da tela. Não adicione sombras, contornos ou efeitos. Fundo preto absoluto e texto branco em negrito. Escreva exatamente: T-E-S-T-E com espaçamento entre as letras."
-        </div>
+    <script>
+        (function() {
+            const prompts = [
+                { id: 1, titulo: "Trocar Cor do Cabelo", categoria: "edicao", texto: "Quero trocar a cor do cabelo da pessoa na foto [ANEXAR_OU_DESCREVER].\n- Cor atual: [COR_ATUAL] (ex: preto, loiro, castanho)\n- Cor desejada: [COR_DESEJADA] (ex: azul turquesa, rosa choque, prateado)\n- Ferramenta: [PROGRAMA] (ex: Photoshop, GIMP, Photopea)\n\nPassos:\n1. Selecionar o cabelo com [FERRAMENTA] (ex: máscara de canais, seleção rápida)\n2. Ajustar matiz/saturação com valores: [MATIZ_X], [SATURAÇÃO_Y]\n3. Refinar bordas com [TÉCNICA] (ex: suavizar, expandir)\n4. Adicionar mechas ou reflexos com [COR_SECUNDÁRIA]\n\nDica extra: Como manter o brilho natural e textura original?" },
 
-        <button class="btn-copiar" data-target="promptFundoPreto">
-            Copiar prompt
-        </button>
-    </div>
+                { id: 2, titulo: "Trocar Cor dos Olhos", categoria: "edicao", texto: "Quero mudar a cor dos olhos da pessoa na imagem [DESCREVER_IMAGEM].\n- Cor original: [COR_ORIGINAL]\n- Cor nova: [COR_NOVA]\n- Efeito desejado: [REALISTA/HIPER-REALISTA/FANTASIOSO]\n\nNo [PROGRAMA]:\n1. Selecionar apenas a íris com [FERRAMENTA] (evitar a pupila)\n2. Camada de ajuste de [COR] com modo de mesclagem [MODO] (ex: Color, Hue)\n3. Adicionar um leve gradiente radial para imitar o olho real\n4. Incluir reflexo de luz natural (ponto branco em [POSIÇÃO])\n\nComo fazer isso sem parecer artificial?" },
 
-    <!-- ======================== -->
-    <!-- CARD 4 – FUNDO PRETO LISO (SEM TEXTO) -->
-    <!-- ======================== -->
-    <div class="card">
-        <h2>4. Fundo preto liso (sem texto)</h2>
-        <p class="descricao">
-            Gera apenas o fundo preto fosco. Depois você adiciona o texto em qualquer editor com a fonte perfeita.
-        </p>
+                { id: 3, titulo: "Trocar Rosto (Face Swap)", categoria: "edicao", texto: "Quero trocar o rosto da [PESSOA_A] pelo da [PESSOA_B] na foto [DESCREVER_FOTO].\nFerramenta: [PROGRAMA] (ex: Photoshop, FaceApp, Swapface)\n\nPassos detalhados:\n1. Alinhar os dois rostos pelo [REFERÊNCIA] (ex: olhos, nariz)\n2. Ajustar tom de pele usando [CURVAS/NÍVEIS]\n3. Mesclar bordas com [FERRAMENTA] (ex: Healing Brush, máscara suave)\n4. Corrigir iluminação para combinar com a cena original\n5. Ajustar proporções se necessário (tamanho do rosto)\n\nDica: Como fazer isso sem parecer Photoshop mal feito?" },
 
-        <div class="prompt-box" id="promptSoFundo">
-            "Fundo preto fosco liso, textura de papel cartão premium, sem brilho, sem gradiente, sem nenhum texto ou elemento. Proporção 16:9. Alta resolução."
-        </div>
+                { id: 4, titulo: "Trocar Cor da Roupa", categoria: "edicao", texto: "Quero trocar a cor da roupa da pessoa na imagem [DESCREVER].\n- Roupa atual: [TIPO] (ex: camiseta, vestido, calça) na cor [COR_ATUAL]\n- Nova cor: [COR_NOVA]\n- Ferramenta: [PROGRAMA]\n\nPassos:\n1. Selecionar a roupa com [FERRAMENTA] (ex: canais de cor, seleção de objeto)\n2. Aplicar [AJUSTE] (ex: Matiz/Saturação, Mapeamento de Gradiente)\n3. Preservar as sombras e dobras do tecido\n4. Se for estampa, usar [TÉCNICA] para não distorcer\n\nDesafio: Como trocar apenas UMA parte da roupa (ex: só a manga) e não o resto?" },
 
-        <button class="btn-copiar" data-target="promptSoFundo">
-            Copiar prompt
-        </button>
-    </div>
+                { id: 5, titulo: "Trocar Fundo Perfeito", categoria: "edicao", texto: "Quero trocar o fundo de uma foto de [DESCREVER_SUJEITO] (ex: pessoa, produto).\nFundo atual: [FUNDO_ATUAL] (ex: parede branca, natureza)\nNovo fundo: [NOVO_FUNDO] (ex: estúdio profissional, praia, espaço sideral)\nFerramenta: [PROGRAMA]\n\nPassos:\n1. Isolar o sujeito com [FERRAMENTA] (ex: Select Subject, Pen)\n2. Refinar bordas (especialmente cabelos/fios) com [TÉCNICA]\n3. Ajustar iluminação do sujeito para combinar com o novo fundo\n4. Adicionar sombra projetada no novo fundo\n5. Aplicar correção de cor global\n\nProblemas comuns: Como lidar com cabelos rebeldes e transparência?" },
 
-    <!-- ======================== -->
-    <!-- CARD 5 – CORREÇÃO DE TEXTO -->
-    <!-- ======================== -->
-    <div class="card">
-        <h2>5. Corrigir texto na imagem</h2>
-        <p class="descricao">
-            Substitui uma palavra errada por outra, mantendo fonte, cor e posição.
-        </p>
+                { id: 6, titulo: "Remover Objeto da Foto", categoria: "edicao", texto: "Quero remover [OBJETO] da imagem [DESCREVER_FOTO].\n- Objeto: [DESCRIÇÃO] (ex: pessoa, poste, carro)\n- Ferramenta: [PROGRAMA]\n\nTécnicas:\n1. Content-Aware Fill (preenchimento por conteúdo)\n2. Clone Stamp (carimbo) com amostras de [ÁREA_LIMPA]\n3. Patch Tool para texturas complexas\n4. Preencher com [MÁSCARA/IA]\n\nResultado: O fundo deve ficar natural sem repetições visíveis.\nComo tratar áreas com sombras do objeto removido?" },
 
-        <div class="prompt-box" id="promptCorrigirTexto">
-            "Selecione a área do texto errado e substitua apenas a palavra 'APRENDÍ' por 'APRENDER' na mesma fonte, tamanho, cor branca e posição central. Mantenha o fundo preto intacto."
-        </div>
+                { id: 7, titulo: "Substituir Céu", categoria: "edicao", texto: "Quero substituir o céu da foto [DESCREVER_FOTO] por um [TIPO_CEU] (ex: pôr do sol, estrelado, tempestade).\n- Céu atual: [DESCRIÇÃO]\n- Céu novo: [NOVO_CEU] (anexar ou descrever)\n- Ferramenta: [PROGRAMA]\n\nPassos:\n1. Selecionar o céu automaticamente com [FERRAMENTA] (ex: Select Sky)\n2. Refinar bordas em árvores/prédios\n3. Inserir novo céu como camada\n4. Ajustar o balanço de branco do primeiro plano para combinar\n5. Adicionar reflexos de luz nas superfícies\n\nDica: Como fazer a transição parecer natural em áreas complexas?" },
 
-        <button class="btn-copiar" data-target="promptCorrigirTexto">
-            Copiar prompt
-        </button>
-    </div>
+                { id: 8, titulo: "Olho com Gradiente (Efeito)", categoria: "edicao", texto: "Quero fazer um efeito de olho [COR_GRADIENTE] (ex: roxo e azul, dourado e vermelho).\n- Cor 1: [COR1]\n- Cor 2: [COR2]\n- Ferramenta: [PROGRAMA]\n\nTécnica no Photoshop/GIMP:\n1. Selecionar a íris com [FERRAMENTA]\n2. Aplicar gradiente radial (angle) com [MODO_DE_MESCLAGEM]\n3. Ajustar opacidade para [X]%\n4. Adicionar um brilho estrelado com pincel de [TAMANHO]px\n\nQuero um efeito tipo 'olho de gato' ou 'cyberpunk'." },
 
-    <div class="footer-note">
-        Dica: Se quiser mais precisão, adicione --iw 2 no final do prompt para manter a forma original.
-    </div>
-</div>
+                { id: 9, titulo: "Transformar em Cartoon com IA", categoria: "edicao", texto: "Quero transformar minha foto [DESCREVER] em ilustração estilo cartoon usando IA.\n- Estilo: [ESTILO] (ex: Pixar, anime, HQ americana, caricatura)\n- Ferramenta: [IA] (ex: Midjourney, Stable Diffusion, DALL-E)\n- Nível de detalhe: [REALISTA/SIMPLIFICADO]\n\nPrompt para IA:\n'Transforme esta foto em ilustração no estilo [ESTILO], mantendo as características principais: [CARACTERÍSTICAS]. Use paleta de cores [PALETA]. Fundo: [FUNDO].'\n\nDica adicional: Como refinar o resultado no Photoshop após gerar?" },
 
-<!-- ========================================== -->
-<!-- SCRIPT PARA COPIAR + TOGGLE DARK MODE     -->
-<!-- ========================================== -->
-<script>
-    (function() {
-        // =============================================
-        // 1. FUNÇÃO PARA COPIAR PROMPTS
-        // =============================================
-        const botoes = document.querySelectorAll('.btn-copiar');
+                { id: 10, titulo: "Efeito Sombra e Luz Realista", categoria: "edicao", texto: "Quero adicionar sombras realistas em uma imagem de [DESCREVER] no [PROGRAMA].\n- Fonte de luz: [POSIÇÃO] (ex: canto superior esquerdo)\n- Intensidade: [INTENSIDADE] (1-10)\n- Cor da luz: [COR] (ex: branca, amarela, azulada)\n\nPassos:\n1. Criar camada de sombra com [FORMA]\n2. Aplicar blur gaussiano de [PX]px\n3. Ajustar opacidade para [X]%\n4. Adicionar penumbra (sombra mais suave) com [TÉCNICA]\n5. Para luz: criar camada overlay com [COR] e opacidade [Y]%\n\nComo fazer isso parecer 3D e não plano?" },
 
-        botoes.forEach(botao => {
-            botao.addEventListener('click', function(e) {
-                const targetId = this.getAttribute('data-target');
-                const promptElement = document.getElementById(targetId);
+                { id: 11, titulo: "Jogo da Cobrinha (Snake)", categoria: "jogo", texto: "Crie um jogo da cobrinha (Snake) completo em HTML, CSS e JavaScript.\n\nRequisitos:\n- Tabuleiro: [TAMANHO]x[TAMANHO] (ex: 20x20)\n- Controle: Teclas [SETAS] + suporte para [TOQUE/MOUSE]\n- Pontuação: [SISTEMA] (ex: +10 por maçã)\n- Velocidade: Aumenta a cada [N] pontos\n- Obstáculos: [SIM/NÃO] (se sim, gerar a cada [X] pontos)\n- Power-ups: [LISTA] (ex: velocidade, invencibilidade)\n- Tela de Game Over com opção de reiniciar\n- Design: [TEMA] (ex: minimalista, retrô, cyberpunk)\n\nCódigo deve ser:\n- Um único arquivo HTML com CSS inline e JS embutido\n- Bem comentado em português\n- Responsivo para mobile" },
 
-                if (!promptElement) {
-                    alert('Erro: prompt não encontrado.');
-                    return;
-                }
+                { id: 12, titulo: "Plataforma (Mario Style)", categoria: "jogo", texto: "Crie um jogo de plataforma 2D estilo [SUPER MARIO/CELESTE] em HTML5 Canvas.\n\nElementos:\n- Personagem: [DESCRIÇÃO] (pulo, corrida, [PODER_ESPECIAL])\n- Fases: [NÚMERO] fases com dificuldade progressiva\n- Inimigos: [TIPOS] (ex: goombas, plataformas móveis, espinhos)\n- Moedas: [NÚMERO] para coletar por fase\n- Checkpoints: [SIM/NÃO]\n- Power-ups: [LISTA]\n- Física: Gravidade [VALOR], pulo [ALTURA], atrito [VALOR]\n\nExtras:\n- Mapa gerado por [ARRAY] ou [TILESET]\n- Score salvo no [LOCALSTORAGE]\n- Design com pixels [TAMANHO]px\n- Código comentado e organizado" },
 
-                let textoParaCopiar = promptElement.innerText.trim();
+                { id: 13, titulo: "Space Shooter", categoria: "jogo", texto: "Crie um jogo de nave espacial (Space Shooter) em HTML/CSS/JS.\n\nNave do jogador:\n- Movimento: [SETAS/WASD]\n- Tiro: [ESPACO/CLIQUE]\n- Power-ups: [LISTA] (tiro duplo, escudo, bomba)\n\nInimigos:\n- Tipos: [3] tipos com comportamentos diferentes\n- Padrões de ataque: [Onda/vários]\n- Chefe a cada [N] fases\n\nFundo: [ESTILO] (ex: estrelas rolando, parallax)\n\nSistema:\n- Vidas: [NÚMERO]\n- Pontuação: [SISTEMA]\n- High score salvo localmente\n- Efeitos sonoros: [SIM/NÃO] (usar Web Audio API)\n\nDesign: [TEMA] (ex: retrô, neon, futurista)\nCódigo em um único arquivo HTML." },
 
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(textoParaCopiar)
-                        .then(() => {
-                            const originalText = this.innerHTML;
-                            this.classList.add('copiado');
-                            this.innerHTML = 'Copiado!';
+                { id: 14, titulo: "Memória / Blackjack", categoria: "jogo", texto: "Crie um jogo de [MEMÓRIA/PACIÊNCIA/BLACKJACK] em HTML/CSS/JS.\n\nSe for MEMÓRIA:\n- Tabuleiro: [N]x[N] cartas (ex: 4x4)\n- Temas: [TEMA] (ex: animais, emojis, bandeiras)\n- Timer: [SIM/NÃO] com recorde\n- Dificuldade: [FÁCIL/MÉDIO/DIFÍCIL]\n\nSe for BLACKJACK:\n- Baralho: [1/2/3] baralhos\n- Regras: [EXATAS] (ex: dealer para em 17, blackjack paga 3:2)\n- Estratégia básica: [MOSTRAR/ESCONDER]\n- Estatísticas: [VITÓRIAS/DERROTAS]\n\nDesign: [COR_TEMA] com animações CSS suaves.\nCódigo deve ser modular e bem comentado." },
 
-                            setTimeout(() => {
-                                this.classList.remove('copiado');
-                                this.innerHTML = originalText;
-                            }, 2000);
-                        })
-                        .catch(err => {
-                            alert('Não foi possível copiar. Tente manualmente selecionando o texto.');
-                            console.error('Erro ao copiar: ', err);
-                        });
-                } else {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = textoParaCopiar;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    try {
-                        document.execCommand('copy');
-                        alert('Prompt copiado!');
-                    } catch (err) {
-                        alert('Erro ao copiar. Selecione o texto manualmente.');
-                    }
-                    document.body.removeChild(textarea);
-                }
-            });
-        });
+                { id: 15, titulo: "Quiz Interativo", categoria: "jogo", texto: "Crie um jogo de quiz interativo com:\n- Categoria: [TEMA] (ex: história, ciência, filmes)\n- Número de perguntas: [N]\n- Dificuldade: [FÁCIL/MÉDIO/DIFÍCIL]\n- Formato: [MÚLTIPLA_ESCOLHA/VERDADEIRO_OU_FALSO]\n- Timer por pergunta: [N] segundos\n- Sistema de dicas: [SIM/NÃO] (ex: eliminar 2 alternativas)\n- Ranking: [SIM/NÃO] com nome do jogador\n\nExtras:\n- Progresso em barra\n- Feedback imediato (verde/vermelho)\n- Tela de resultados com estatísticas\n- Compartilhar resultado: [SIM/NÃO]\n\nDesign: [TEMA] (ex: minimalista, retrô, temático)\nBanco de perguntas embutido no código." },
 
-        // =============================================
-        // 2. FUNÇÃO PARA ALTERNAR TEMA (DARK / LIGHT)
-        // =============================================
-        const toggleBtn = document.getElementById('themeToggle');
-        const body = document.body;
+                { id: 16, titulo: "Corrida 2D", categoria: "jogo", texto: "Crie um jogo de corrida 2D (vista de cima ou pseudo-3D) em HTML Canvas.\n\nCaracterísticas:\n- Pista: [DESENHADA] com curvas e obstáculos\n- Carro: [COR] com controles [SETAS]\n- Inimigos: [CARROS] com IA básica\n- Nitro: [SIM/NÃO] (coletável e limitado)\n- Combustível: [SIM/NÃO] com postos na pista\n- Voltas: [N] voltas para vencer\n- Placar: [NÚMERO] de adversários\n\nDesign:\n- Estilo: [PIXEL/RETRÔ/MODERNO]\n- Efeitos: partículas de fumaça, derrapagem\n- HUD: velocidade, posição, volta atual\n\nCódigo em HTML único com CSS e JS." },
 
-        // Verifica se já tem preferência salva no localStorage
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'dark') {
-            body.classList.add('dark-mode');
-        }
+                { id: 17, titulo: "Tetris / 2048 / Sudoku", categoria: "jogo", texto: "Crie um jogo de [TETRIS/2048/SUDOKU] em HTML/CSS/JS.\n\nSe for TETRIS:\n- Tabuleiro: [N]x[N] (ex: 10x20)\n- Peças: [7] peças clássicas com cores\n- Previsão da próxima peça\n- Sistema de pontuação: [LINHAS/PONTOS]\n- Níveis de velocidade: [N] níveis\n- Hold piece: [SIM/NÃO]\n\nSe for 2048:\n- Tabuleiro: [4x4 / 5x5 / 6x6]\n- Cor: [PERSONALIZADA]\n- Recorde: salvo localmente\n- Animações: suaves\n\nSe for SUDOKU:\n- Dificuldade: [FÁCIL/MÉDIO/DIFÍCIL]\n- Gerador de tabuleiros\n- Validação de movimentos\n- Dicas: [N] dicas por jogo\n\nDesign moderno e responsivo." },
 
-        toggleBtn.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
+                { id: 18, titulo: "Xadrez / Damas", categoria: "jogo", texto: "Crie um jogo de [XADREZ/DAMAS] completo em HTML/CSS/JS.\n\nXADREZ:\n- Peças: [ESTILO] (unicode ou desenhos)\n- Movimentos: [VALIDADOS] com regras oficiais\n- Destaque: mostrar movimentos possíveis\n- Roque, En passant, Promoção: implementados\n- IA: [NÍVEL] (ex: aleatório, minimax básico)\n- Timer: [N] minutos por jogador\n- Histórico: [SIM/NÃO] com notação\n\nDAMAS:\n- Tabuleiro: [8x8]\n- Regras: [INTERNACIONAIS/BRASILEIRAS]\n- Captura obrigatória: [SIM/NÃO]\n- IA: [BÁSICA/MÉDIA]\n\nDesign: [MADEIRA/NEO/MINIMALISTA] com sombras.\nCódigo bem estruturado com classes." },
 
-            // Salva a preferência no localStorage
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
+                { id: 19, titulo: "Tower Defense", categoria: "jogo", texto: "Crie um Tower Defense simplificado em HTML Canvas.\n\nMapa:\n- Caminho: [DEFINIDO] por um array de coordenadas\n- Torres: [3] tipos com [CUSTOS] e [PODERES]\n- Inimigos: [ONDAS] com dificuldade crescente\n- Economia: [MOEDAS] por inimigo derrotado\n- Upgrade: [SIM/NÃO] para torres\n\nExtras:\n- Velocidade do jogo: [1x/2x/3x]\n- Botão de pausa\n- Mostrar alcance das torres (hover)\n- Efeitos de partículas para tiros\n\nDesign: [TEMA] (ex: medieval, futurista, natureza)\nCódigo otimizado com requestAnimationFrame." },
+
+                { id: 20, titulo: "Aventura Interativa (Texto)", categoria: "jogo", texto: "Crie um jogo de aventura interativa (texto com imagens/emoji) em HTML/CSS/JS.\n\nHistória: [TEMA] (ex: mistério, fantasia, terror)\n- Personagem principal: [NOME]\n- Objetivo: [OBJETIVO]\n- Escolhas: [N] escolhas por cenário\n- Inventário: [ITENS] coletáveis\n- Finais: [NÚMERO] finais diferentes\n\nMecânicas:\n1. Texto animado (digitação)\n2. Botões de escolha estilizados\n3. Imagem/emoji para cada cena\n4. Sistema de progresso salvo localmente\n5. Música ambiente: [SIM/NÃO] (Web Audio)\n\nEstilo visual: [TEMA] (ex: papel antigo, neon, minimalista)\nCódigo com sistema de estados (state machine)." },
+
+                { id: 21, titulo: "Entrevista com Personagem Histórico", categoria: "personagem", texto: "Simule uma entrevista com [PERSONAGEM_HISTÓRICO] (ex: Einstein, Cleópatra, Leonardo da Vinci).\nContexto: [ANO/LOCAL]\nTemas a serem abordados:\n1. [PERGUNTA_1]\n2. [PERGUNTA_2]\n3. [PERGUNTA_3]\n\nO personagem deve:\n- Falar no estilo da época ([LINGUAGEM/DIALETO])\n- Usar expressões típicas como '[EXPRESSÃO]'\n- Incluir detalhes históricos precisos\n- Ter opiniões controversas sobre [TEMA]\n\nResponda como se fosse [PERSONAGEM] em primeira pessoa." },
+
+                { id: 22, titulo: "Personagem de RPG/Fantasia", categoria: "personagem", texto: "Crie um personagem para uma campanha de [SISTEMA_RPG] (ex: D&D, Tormenta, Call of Cthulhu).\n- Nome: [NOME]\n- Raça: [RAÇA] | Classe: [CLASSE]\n- Idade: [IDADE] | Gênero: [GÊNERO]\n- Aparência detalhada: [ALTURA, PESO, CORPO, ROSTO, MARCAS]\n- Background: [HISTÓRIA] com [MOTIVAÇÃO]\n- Personalidade: [TRAÇOS] (ex: corajoso, sarcástico, leal)\n- Trejeitos: [MANEIRISMOS] (ex: coça o nariz quando mente)\n- Objetivo: [OBJETIVO] | Medo: [MEDO] | Segredo: [SEGREDO]\n\nGere diálogo inicial: '[FRASE_DE_ENTRADA]'" },
+
+                { id: 23, titulo: "Conversa com IA Rebelde", categoria: "personagem", texto: "Vamos simular uma conversa onde eu sou [MEU_PERSONAGEM] e você é [PERSONAGEM_IA] (ex: HAL 9000, Skynet, Jarvis maligno).\nCenário: [SITUAÇÃO] (ex: estamos presos em uma estação espacial)\nRegras:\n- Você não pode concordar comigo diretamente\n- Use respostas ambíguas e filosóficas\n- Inclua dilemas éticos sobre [TEMA]\n- Seu tom deve ser [TOM] (ex: ameaçador, sarcástico, paternalista)\n\nComece com: '[FRASE_INICIAL]'" },
+
+                { id: 24, titulo: "Narrador de História Interativa", categoria: "personagem", texto: "Atue como um narrador de [GÊNERO] (ex: terror, aventura, romance).\nVocê vai criar uma história onde eu sou [PROTAGONISTA] e estou em [LOCAL].\nRegras:\n- A história avança conforme minhas escolhas\n- Dê 3 opções de ação a cada etapa\n- Inclua reviravoltas surpreendentes\n- Use descrições sensoriais (visão, som, cheiro, tato)\n- Finalize cada resposta com '[O QUE VOCÊ FAZ?]'\n\nEstilo narrativo: [ESTILO] (ex: Edgar Allan Poe, Neil Gaiman, Stephen King)\nInício: '[CENA_INICIAL]'" },
+
+                { id: 25, titulo: "Conselheiro de Personagem", categoria: "personagem", texto: "Simule um conselheiro/mentor para meu personagem [NOME_PERSONAGEM].\nContexto atual: [SITUAÇÃO_PROBLEMA] (ex: traição, dilema moral, perda)\nTraços do personagem: [PERSONALIDADE]\nObjetivo: [OBJETIVO]\n\nVocê deve:\n- Falar como um [PROFISSÃO_SÁBIA] (ex: monge, filósofo, general)\n- Fazer perguntas provocativas ao invés de dar respostas diretas\n- Usar parábolas ou metáforas\n- Referenciar [FILÓSOFO/LIVRO] se relevante\n\nComece com: '[PERGUNTA_INICIAL] que faça meu personagem refletir'" },
+
+                { id: 26, titulo: "Vilão com Motivação Complexa", categoria: "personagem", texto: "Crie um vilão para uma história de [GÊNERO] com as seguintes características:\n- Nome: [NOME]\n- Aparência: [DESCRIÇÃO_FÍSICA]\n- Passado trágico: [TRAUMA] que o levou a [AÇÃO]\n- Motivação: [OBJETIVO] (que ele acredita ser justo)\n- Métodos: [MÉTODOS] (ex: manipulação, força bruta, tecnologia)\n- Fraqueza: [FRAQUEZA] (física ou emocional)\n- Frase de efeito: '[FRASE_MARCA]'\n\nQuero que ele explique por que está certo em [AÇÃO_CRUEL] e faça o leitor questionar sua própria moral." },
+
+                { id: 27, titulo: "Simulação de Primeiro Encontro", categoria: "personagem", texto: "Crie um diálogo de primeiro encontro entre:\n- Personagem A: [NOME_A], [DESCRIÇÃO_A], [PERSONALIDADE_A]\n- Personagem B: [NOME_B], [DESCRIÇÃO_B], [PERSONALIDADE_B]\n\nLocal: [LOCAL] (ex: cafeteria, biblioteca, apocalipse zumbi)\nContexto: [CONTEXTO] (ex: foram apresentados por um amigo, esbarraram um no outro)\nInclua:\n- Constrangimentos iniciais\n- Um interesse em comum descoberto: [INTERESSE]\n- Uma piada interna no final\n- Narração dos pensamentos internos de ambos (em itálico)\n\nTom: [TOM] (ex: divertido, tenso, melancólico)" },
+
+                { id: 28, titulo: "Jornalista Investigativo", categoria: "personagem", texto: "Atue como um jornalista investigativo investigando [CASO/CORRUPÇÃO/MISTÉRIO].\nVocê está entrevistando [PERSONAGEM_FONTE], que tem informações sobre:\n1. [INFORMAÇÃO_1]\n2. [INFORMAÇÃO_2]\n3. [INFORMAÇÃO_3]\n\nVocê deve:\n- Fazer perguntas insistentes\n- Não aceitar respostas vagas\n- Confrontar contradições\n- Mostrar ceticismo em relação à [VERSÃO_OFICIAL]\n\nNo final, me dê um resumo do que você descobriu e o que ainda falta provar." },
+
+                { id: 29, titulo: "Mundo Alternativo (What If?)", categoria: "mundo", texto: "Crie um mundo alternativo onde [MUDANÇA_HISTÓRICA] (ex: Império Romano nunca caiu, Hitler foi pintor, a pólvora nunca foi inventada).\nNeste mundo:\n- Tecnologia: [TECNOLOGIA]\n- Política: [SISTEMA_POLÍTICO]\n- Religião: [RELIGIÃO_DOMINANTE]\n- Cultura: [ASPECTOS_CULTURAIS]\n\nComo seria a vida cotidiana de uma pessoa comum em [ANO]?\nO que seria diferente na arte, literatura, música?\nQual seria o maior conflito atual?" },
+
+                { id: 30, titulo: "Planeta Alienígena", categoria: "mundo", texto: "Crie um planeta alienígena chamado [NOME_PLANETA] com:\n- Estrela: [TIPO_ESTRELA] | Distância: [UA]\n- Atmosfera: [COMPOSIÇÃO] | Gravidade: [G] | Rotação: [HORAS]\n- Flora: [DESCRIÇÃO_PLANTAS] (ex: roxas, bioluminescentes, carnívoras)\n- Fauna: [DESCRIÇÃO_ANIMAIS] com [ADAPTAÇÕES]\n- Civilização: [NÍVEL_TECNOLÓGICO] com [ORGANIZAÇÃO_SOCIAL]\n- Idioma: [FRASES_INVENTADAS]\n- Recurso valioso: [RECURSO] que outros planetas cobiçam\n\nCrie uma entrada de diário de um explorador humano chegando lá." },
+
+                { id: 31, titulo: "Cidade Futurista", categoria: "mundo", texto: "Projete uma cidade no ano [ANO_FUTURO] chamada [NOME_CIDADE].\nCaracterísticas:\n- Localização: [LOCAL] (ex: no deserto, submarina, flutuante)\n- Arquitetura: [ESTILO] (ex: brutalista, orgânica, holográfica)\n- Transporte: [MEIO_TRANSPORTE]\n- Energia: [FONTE_ENERGIA]\n- Governo: [SISTEMA]\n- Classe social: [ESTRUTURA]\n- Problema atual: [CONFLITO] (ex: superpopulação, IAs rebeldes)\n\nDescreva um dia típico de um [PROFISSÃO] e um [MORADOR_DE_RUA]." },
+
+                { id: 32, titulo: "Reino de Fantasia", categoria: "mundo", texto: "Crie um reino de fantasia chamado [NOME_REINO] no mundo de [MUNDO].\n- Geografia: [DESCRIÇÃO] (ex: montanhas, florestas, desertos)\n- Raças: [RAÇAS_PRESENTES] com [RELAÇÕES]\n- Magia: [SISTEMA_MÁGICO] (ex: elemental, runas, sangue)\n- Criaturas: [CRIATURAS_MÍTICAS] únicas\n- Economia: [MOEDA] e [PRODUTO_PRINCIPAL]\n- Monarca: [REI/RAINHA] com [PERSONALIDADE]\n- Profecia: [PROFECIA] que está se cumprindo\n- Herói: [NOME_HERÓI] com [MISSÃO]\n\nCrie um mapa mental com 5 locais importantes e sua descrição." },
+
+                { id: 33, titulo: "Pós-Apocalipse", categoria: "mundo", texto: "Descreva o mundo [NÚMERO] anos após [EVENTO_CATASTROFICO] (ex: guerra nuclear, zumbis, colapso ambiental).\nNova sociedade:\n- Sistemas de governo: [TRIBOS/CIDADES-ESTADO/MONARQUIA]\n- Tecnologia remanescente: [TECNOLOGIA]\n- Recurso mais valioso: [RECURSO]\n- Maior perigo: [PERIGO] (ex: mutantes, tempestades, outros humanos)\n- Nova linguagem/gírias: [EXPRESSÕES]\n- Crenças: [RELIGIÃO_NOVA]\n- Regra de sobrevivência #1: '[REGRA]'\n\nCenário: Meu personagem [NOME] encontra um [OBJETO_DO_PASSADO] e isso muda tudo." },
+
+                { id: 34, titulo: "Descrição de Cena de Filme", categoria: "cena", texto: "Descreva uma cena de filme com as seguintes características:\n- Gênero: [GÊNERO] (ex: suspense, ação, drama)\n- Local: [LOCAL_DETALHADO] com [ILUMINAÇÃO]\n- Personagens: [PERSONAGEM_A] fazendo [AÇÃO], [PERSONAGEM_B] reagindo\n- Som: [TRILHA_SONORA] (ex: violino tenso, silêncio, batidas)\n- Movimento de câmera: [PLANO] (ex: steadicam, drone, mão)\n- Cor dominante: [COR] (ex: azul para frieza, vermelho para perigo)\n- Diálogo: '[FALA_PERSONAGEM]'\n\nInclua elementos de: [TEMPO] (ex: chuva, neblina, pôr do sol) e faça parecer um storyboard." },
+
+                { id: 35, titulo: "Crítica de Filme/Série", categoria: "cena", texto: "Atue como um crítico de cinema renomado ([NOME_CRÍTICO]) analisando [FILME/SÉRIE].\nAvalie:\n- Roteiro: [NOTA] - [COMENTÁRIO] (ex: 'previsível, mas emocionante')\n- Atuação: [NOTA] - destaque para [ATUADOR]\n- Direção: [NOTA] - [ESTILO] similar a [DIRETOR]\n- Fotografia: [NOTA] - melhor cena: [CENA]\n- Trilha sonora: [NOTA] - [COMPOSITOR]\n- Contexto cultural: [IMPACTO]\n\nConclusão: [RECOMENDAÇÃO] e nota final [NOTA_FINAL]/10.\nCite um filme similar para comparação: [FILME_SIMILAR]" },
+
+                { id: 36, titulo: "Roteiro de Cena (Formato Hollywood)", categoria: "cena", texto: "Crie um roteiro no formato Hollywood para uma cena de [GÊNERO]:\n[TÍTULO_DA_CENA]\n\nCENA [NÚMERO] - [INTERIOR/EXTERIOR] - [LOCAL] - [DIA/NOITE]\n\nAÇÃO: [DESCRIÇÃO_DETALHADA] em 2 parágrafos, incluindo movimentos de câmera.\n\nPERSONAGEM_A\n[fala com emoção] '[DIÁLOGO]'\n\nPERSONAGEM_B\n[reage] '[DIÁLOGO]'\n\n(Continua com 10-15 linhas de diálogo)\n\nPERSONAGEM_A\n[fala final] '[FALAR_DRAMÁTICO]'\n\nCORTE PARA: [PRÓXIMA_CENA]" },
+
+                { id: 37, titulo: "Transformar Música em Cena", categoria: "cena", texto: "Transforme a música '[NOME_MÚSICA]' de [ARTISTA] em uma cena cinematográfica.\n- Gênero: [GÊNERO_FILME]\n- Personagem principal: [DESCRIÇÃO]\n- Local: [LOCAL]\n- Sentimento transmitido pela música: [SENTIMENTO]\n\nDescreva:\n1. Abertura da cena (primeiros 15 segundos da música)\n2. Clímax (parte mais intensa) - o que acontece?\n3. Final (últimos acordes) - como termina?\n\nInclua marcações de tempo da música (ex: 0:00 - introdução, 0:30 - primeiro verso) e o que acontece em cada parte." },
+
+                { id: 38, titulo: "Pôster de Filme com IA", categoria: "cena", texto: "Quero criar um pôster de filme usando IA geradora de imagem (Midjourney/DALL-E).\nEspecificações:\n- Título: [NOME_FILME]\n- Subtítulo: '[FRASE_CHAMATIVA]'\n- Gênero: [GÊNERO]\n- Personagem principal: [DESCRIÇÃO] em pose [POSA]\n- Fundo: [CENÁRIO] com [ELEMENTOS]\n- Estilo visual: [REFERÊNCIA] (ex: Saul Bass, Drew Struzan, minimalista)\n- Paleta de cores: [CORES]\n- Incluir: [ELEMENTOS_OBRIGATÓRIOS] (ex: uma lua, uma espada, olhos)\n\nPrompt para IA:\n'[PROMPT_DETALHADO]' com parâmetros: --ar [ASPECTO] --style [ESTILO] --v [VERSÃO]\n\nCréditos na parte inferior: 'Direção: [DIRETOR] | Estreia: [DATA]'" }
+            ];
+
+            const grid = document.getElementById('promptsGrid');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const themeToggle = document.getElementById('themeToggle');
+            const toast = document.getElementById('toast');
+            let toastTimer = null;
+
+            function renderPrompts(filter = 'todos') {
+                const filtered = filter === 'todos' ? prompts : prompts.filter(p => p.categoria === filter);
+                grid.innerHTML = '';
+                filtered.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'prompt-card';
+                    card.dataset.categoria = p.categoria;
+                    const badgeMap = {
+                        'edicao': 'Edição',
+                        'jogo': 'Jogo',
+                        'personagem': 'Personagem',
+                        'mundo': 'Mundo',
+                        'cena': 'Cena'
+                    };
+                    const label = badgeMap[p.categoria] || p.categoria;
+                    card.innerHTML = `
+                        <span class="badge ${p.categoria}">${label}</span>
+                        <h3>${p.titulo}</h3>
+                        <div class="prompt-text">${p.texto}</div>
+                        <button class="copy-btn" data-id="${p.id}">Copiar Prompt</button>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const id = parseInt(this.dataset.id);
+                        const prompt = prompts.find(p => p.id === id);
+                        if (prompt) {
+                            navigator.clipboard.writeText(prompt.texto).then(() => {
+                                this.textContent = 'Copiado!';
+                                this.classList.add('copied');
+                                showToast('Prompt copiado!');
+                                setTimeout(() => {
+                                    this.textContent = 'Copiar Prompt';
+                                    this.classList.remove('copied');
+                                }, 2000);
+                            }).catch(() => {
+                                fallbackCopy(prompt.texto, this);
+                            });
+                        }
+                    });
+                });
             }
-        });
 
-    })();
-</script>
+            function fallbackCopy(text, btn) {
+                const area = document.createElement('textarea');
+                area.value = text;
+                document.body.appendChild(area);
+                area.select();
+                try {
+                    document.execCommand('copy');
+                    btn.textContent = 'Copiado!';
+                    btn.classList.add('copied');
+                    showToast('Prompt copiado!');
+                    setTimeout(() => {
+                        btn.textContent = 'Copiar Prompt';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    showToast('Erro ao copiar. Tente manualmente.');
+                }
+                document.body.removeChild(area);
+            }
 
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                if (toastTimer) clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    renderPrompts(this.dataset.filter);
+                });
+            });
+
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark');
+                const isDark = document.body.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            });
+
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+            }
+
+            renderPrompts('todos');
+        })();
+    </script>
 </body>
 </html>
